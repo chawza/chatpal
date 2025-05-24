@@ -54,13 +54,13 @@ async def on_audio_end():
     })
 
     client = openai.AsyncClient(base_url='http://192.168.1.16:80/v1', api_key='lmao')
-    response = await client.chat.completions.create(model='qwen3:8b', messages=messages)
+    response = await client.chat.completions.create(model='gemma3:4b', messages=messages)
 
     message = response.choices[0].message
     llm_response_str = message.content or ''
-    llm_response_str = llm_response_str.split('</think>')[1]
+    # llm_response_str = llm_response_str.split('</think>')[1]
     assert llm_response_str, 'Invalid LLM Response'
-    # output_speech_bytes = await speaches.text_to_speech(text=llm_response_str)
+    output_speech_bytes = await speaches.text_to_speech(text=llm_response_str)
 
-    # output_llm_element = cl.Audio(content=output_speech_bytes, e='audio/wav', auto_play=True)
-    await cl.Message(type='system_message', content=llm_response_str).send()
+    output_llm_audio = cl.Audio(content=output_speech_bytes, mime='audio/wav', auto_play=True)
+    await cl.Message(type='system_message', content=llm_response_str, elements=[output_llm_audio]).send()
