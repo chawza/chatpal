@@ -1,4 +1,5 @@
 import io
+import os
 from os import path
 from chainlit.message import Message
 import openai
@@ -7,10 +8,22 @@ import asyncio
 import chainlit as cl
 import speaches
 import utils
+import prompts
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+
+
+@cl.step(name='processing')
+async def complete(messages: list[ChatCompletionMessageParam]) -> str:
+    # client = openai.AsyncClient(base_url='http://192.168.1.16:80/v1', api_key='lmao')
+    # response = await client.chat.completions.create(model='gemma3:4b', messages=messages)
+
+    client = openai.AsyncClient(base_url='https://openrouter.ai/api/v1', api_key=os.getenv('OPENAI_KEY') or 'No TOKEN')
+    response = await client.chat.completions.create(model='google/gemma-3-4b-it', messages=messages)
+    return response.choices[0].message.content or ''
 
 @cl.on_chat_start
 async def main():
-    await cl.Message(type="system_message", content='/nothink').send()
+    cl.chat_context.add(cl.Message(type="system_message", content=prompts.system_prompt))
     await cl.Message(type="assistant_message", content="Hello, who can I help you?").send()
 
 @cl.on_audio_start
@@ -53,13 +66,9 @@ async def on_audio_end():
         'content': transcribed,
     })
 
-    client = openai.AsyncClient(base_url='http://192.168.1.16:80/v1', api_key='lmao')
-    response = await client.chat.completions.create(model='gemma3:4b', messages=messages)
-
-    message = response.choices[0].message
-    llm_response_str = message.content or ''
-    # llm_response_str = llm_response_str.split('</think>')[1]
+    llm_response_str = await complete(messages) or ''
     assert llm_response_str, 'Invalid LLM Response'
+
     output_speech_bytes = await speaches.text_to_speech(text=llm_response_str)
 
     output_llm_audio = cl.Audio(content=output_speech_bytes, mime='audio/wav', auto_play=True)
