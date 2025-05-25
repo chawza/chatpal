@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import io
 import os
 from os import path
@@ -9,11 +10,13 @@ import chainlit as cl
 import speaches
 import utils
 import prompts
-from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
+
+if TYPE_CHECKING
+    from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 
 
 @cl.step(name='processing')
-async def complete(messages: list[ChatCompletionMessageParam]) -> str:
+async def complete(messages: 'list[ChatCompletionMessageParam]') -> str:
     # client = openai.AsyncClient(base_url='http://192.168.1.16:80/v1', api_key='lmao')
     # response = await client.chat.completions.create(model='gemma3:4b', messages=messages)
 
