@@ -19,7 +19,10 @@ async def complete(messages: list[ChatCompletionMessageParam]) -> str:
 
     client = openai.AsyncClient(base_url='https://openrouter.ai/api/v1', api_key=os.getenv('OPENAI_KEY') or 'No TOKEN')
     response = await client.chat.completions.create(model='google/gemma-3-4b-it', messages=messages)
-    return response.choices[0].message.content or ''
+    content = response.choices[0].message.content
+    if not content:
+        raise Exception('Invalid LLM Output: Empty')
+    return content
 
 @cl.on_chat_start
 async def main():

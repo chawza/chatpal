@@ -12,3 +12,4 @@ wheels/
 # dev
 .chainlit/*
 .files/*
+.env*
