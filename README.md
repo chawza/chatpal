@@ -2,8 +2,8 @@ An english conversation partner to practive english conversation
 
 # Setup
 ## Setup Kokoro (TTS)
-1. [kokoro](https://huggingface.co/hexgrad/Kokoro-82M) TTS as openai compatible server using [fast api kokor](https://github.com/remsky/Kokoro-FastAPI?tab=readme-ov-file)
-2. [faster whisper](https://github.com/SYSTRAN/faster-whisper) STT as openai compatible server using [speaches](https://github.com/speaches-ai/speaches)
+1. Setup openai compatible server TTS Server using [fast api kokoro](https://github.com/remsky/Kokoro-FastAPI?tab=readme-ov-file)
+2. Setup STT as openai compatible server using [speaches](https://github.com/speaches-ai/speaches)
 3. run this project using chainlit as using
     1. clone this project
         ```bash
