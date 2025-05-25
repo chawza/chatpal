@@ -11,7 +11,7 @@ import speaches
 import utils
 import prompts
 
-if TYPE_CHECKING
+if TYPE_CHECKING:
     from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 
 
