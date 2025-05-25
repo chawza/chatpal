@@ -7,6 +7,7 @@ import openai
 import wave
 import asyncio
 import chainlit as cl
+from conf import load_conf
 import speaches
 import utils
 import prompts
@@ -17,14 +18,15 @@ if TYPE_CHECKING:
 
 @cl.step(name='processing')
 async def complete(messages: 'list[ChatCompletionMessageParam]') -> str:
-    # client = openai.AsyncClient(base_url='http://192.168.1.16:80/v1', api_key='lmao')
-    # response = await client.chat.completions.create(model='gemma3:4b', messages=messages)
+    conf = load_conf()
 
-    client = openai.AsyncClient(base_url='https://openrouter.ai/api/v1', api_key=os.getenv('OPENAI_KEY') or 'No TOKEN')
-    response = await client.chat.completions.create(model='google/gemma-3-4b-it', messages=messages)
+    client = openai.AsyncClient(base_url=conf.OPENAI_BASE_URL, api_key=conf.OPENAI_TOKEN)
+    response = await client.chat.completions.create(model=conf.LLM_MODEL, messages=messages)
     content = response.choices[0].message.content
+
     if not content:
         raise Exception('Invalid LLM Output: Empty')
+
     return content
 
 @cl.on_chat_start
