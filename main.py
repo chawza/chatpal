@@ -32,7 +32,10 @@ async def complete(messages: 'list[ChatCompletionMessageParam]') -> str:
 @cl.on_chat_start
 async def main():
     cl.chat_context.add(cl.Message(type="system_message", content=prompts.system_prompt))
-    await cl.Message(type="assistant_message", content="Hello, who can I help you?").send()
+
+    greeting_text = "Hello, who can I help you?"
+    greet_element = cl.Audio(content=await speaches.text_to_speech(greeting_text), mime="audio/wav", auto_play=True)
+    await cl.Message(type="assistant_message", content=greeting_text, elements=[greet_element],).send()
 
 @cl.on_audio_start
 async def on_audio_start():
@@ -66,7 +69,6 @@ async def on_audio_end():
     sound_replay_element = cl.Audio(content=audio_bytes, mime="audio/wav")
     transcribed = await speaches.speech_to_text(audio_bytes)
     await cl.Message(author="You", type='user_message', elements=[sound_replay_element], content=transcribed).send()
-    # cl.chat_context.add(cl.Message(type='user_message', content=transcribed))
 
     llm_response_str = await complete(cl.chat_context.to_openai()) or ''
     assert llm_response_str, 'Invalid LLM Response'
