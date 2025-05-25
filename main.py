@@ -60,19 +60,13 @@ async def on_audio_end():
 
     sound_replay_element = cl.Audio(content=audio_bytes, mime="audio/wav")
     transcribed = await speaches.speech_to_text(audio_bytes)
-
     await cl.Message(author="You", type='user_message', elements=[sound_replay_element], content=transcribed).send()
+    # cl.chat_context.add(cl.Message(type='user_message', content=transcribed))
 
-    messages = cl.chat_context.to_openai()
-    messages.append({
-        'role': 'user',
-        'content': transcribed,
-    })
-
-    llm_response_str = await complete(messages) or ''
+    llm_response_str = await complete(cl.chat_context.to_openai()) or ''
     assert llm_response_str, 'Invalid LLM Response'
 
     output_speech_bytes = await speaches.text_to_speech(text=llm_response_str)
 
     output_llm_audio = cl.Audio(content=output_speech_bytes, mime='audio/wav', auto_play=True)
-    await cl.Message(type='system_message', content=llm_response_str, elements=[output_llm_audio]).send()
+    await cl.Message(type='assistant_message', content=llm_response_str, elements=[output_llm_audio]).send()

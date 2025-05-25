@@ -15,8 +15,8 @@ async def speech_to_text(speech: bytes) -> str:
     return response.text
 
 tts_model = "kokoro"
-tts_voice = "am_santa"  # old guy, pretty good
-# tts_voice = "af_bella" # good clear
+# tts_voice = "am_santa"  # old guy, pretty good
+tts_voice = "af_bella" # good clear
 
 @cl.step(name='about to speak')
 async def text_to_speech(text: str) -> bytes:
